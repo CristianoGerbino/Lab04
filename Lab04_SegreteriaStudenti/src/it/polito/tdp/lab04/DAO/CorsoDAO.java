@@ -24,7 +24,6 @@ public class CorsoDAO {
 		try {
 			Connection conn = ConnectDB.getConnection();
 			PreparedStatement st = conn.prepareStatement(sql);
-
 			ResultSet rs = st.executeQuery();
 
 			while (rs.next()) {
@@ -37,9 +36,11 @@ public class CorsoDAO {
 				System.out.println(codins + " " + numeroCrediti + " " + nome + " " + periodoDidattico);
 
 				// Crea un nuovo JAVA Bean Corso
+				Corso c = new Corso (codins, numeroCrediti, nome, periodoDidattico);
 				// Aggiungi il nuovo oggetto Corso alla lista corsi
+				corsi.add(c);
 			}
-
+			
 			return corsi;
 
 		} catch (SQLException e) {
@@ -51,17 +52,84 @@ public class CorsoDAO {
 	/*
 	 * Dato un codice insegnamento, ottengo il corso
 	 */
-	public void getCorso(Corso corso) {
-		// TODO
+	public Corso getCorso(String codins) {
+		final String sql = "SELECT * FROM corso WHERE codins LIKE ?";
+		int crediti;
+		String nome;
+		int pd;
+		
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, codins);
+			ResultSet rs = st.executeQuery();
+			
+			if (!rs.next()) {
+				return null;
+			
+			} else {
+				crediti = rs.getInt("crediti");
+				nome = rs.getString("nome");
+				pd= rs.getInt("pd");
+				Corso c = new Corso (codins, crediti, nome, pd);
+				return c;
+			}
+		} catch (SQLException e) {
+			// e.printStackTrace();
+			throw new RuntimeException("Errore Db");
 	}
+	}
+		
 
 	/*
 	 * Ottengo tutti gli studenti iscritti al Corso
 	 */
-	public void getStudentiIscrittiAlCorso(Corso corso) {
-		// TODO
+	public List <Studente> getStudentiIscrittiAlCorso(Corso corso) {
+		final String sql = "SELECT matricola FROM iscrizione WHERE codins LIKE ?";
+		List<Studente> studenti = new LinkedList<Studente>();
+		int matricola;
+		
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setString(1, corso.getCodIns());
+			ResultSet rs = st.executeQuery();
+			StudenteDAO dao = new StudenteDAO();
+			
+			while (rs.next()) {
+				matricola = rs.getInt("matricola");
+				studenti.add(dao.getStudentePerMatricola(matricola));
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException("Errore DB");
+		}
+			
+		return studenti;
 	}
 
+	public List <Corso> getCorsiPerStudente (int matricola) {
+		final String sql = "SELECT codins FROM iscrizione WHERE matricola LIKE ?";
+		List<Corso> corsi = new LinkedList<Corso>();
+		String codins;
+		
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1, matricola);
+			ResultSet rs = st.executeQuery();
+			
+			while (rs.next()) {
+				codins = rs.getString("codins");
+				corsi.add(this.getCorso(codins));
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException("Errore DB");
+		}
+			
+		return corsi;
+	}
+	
 	/*
 	 * Data una matricola ed il codice insegnamento, iscrivi lo studente al corso.
 	 */
