@@ -41,7 +41,7 @@
                <children>
                   <Label text="Studente:" />
                   <TextField fx:id="txtinserisciMatricola" />
-                  <Button fx:id="btnRestituisciStudente" mnemonicParsing="false" onAction="#giveMeStudent" style="-fx-background-color: green;" text="✔" />
+                  <Button fx:id="btnRestituisciStudente" mnemonicParsing="false" onAction="#giveMeStudent" style="-fx-background-color: green;" text="✔" textFill="WHITE" />
                   <TextField fx:id="txtNome" editable="false" />
                   <TextField fx:id="txtCognome" editable="false" />
                </children>

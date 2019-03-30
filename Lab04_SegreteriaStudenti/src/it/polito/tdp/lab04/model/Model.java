@@ -1,7 +1,6 @@
 package it.polito.tdp.lab04.model;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import it.polito.tdp.lab04.DAO.CorsoDAO;

@@ -15,6 +15,7 @@ public class StudenteDAO {
 		String nome;
 		String cognome;
 		String codCorso;
+		Studente s;
 		
 		try {
 			Connection conn = ConnectDB.getConnection();
@@ -29,12 +30,17 @@ public class StudenteDAO {
 				cognome = rs.getString("cognome");
 				nome = rs.getString("nome");
 				codCorso = rs.getString("CDS");
-				Studente s = new Studente (matricola, cognome, nome, codCorso);
-				return s;
+				s = new Studente (matricola, cognome, nome, codCorso);
 			}
 	}    catch (SQLException e) {
 			// e.printStackTrace();
 			throw new RuntimeException("Errore Db");
 	}
+		return s;
 	}
+	
+	
+{
+	
+}
 }

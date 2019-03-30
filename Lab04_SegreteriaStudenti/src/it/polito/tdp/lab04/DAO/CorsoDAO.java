@@ -40,13 +40,12 @@ public class CorsoDAO {
 				// Aggiungi il nuovo oggetto Corso alla lista corsi
 				corsi.add(c);
 			}
-			
-			return corsi;
 
 		} catch (SQLException e) {
-			// e.printStackTrace();
+			 e.printStackTrace();
 			throw new RuntimeException("Errore Db");
 		}
+		return corsi;
 	}
 
 	/*
@@ -88,7 +87,7 @@ public class CorsoDAO {
 		final String sql = "SELECT matricola FROM iscrizione WHERE codins LIKE ?";
 		List<Studente> studenti = new LinkedList<Studente>();
 		int matricola;
-		
+		Studente s;
 
 		try {
 			Connection conn = ConnectDB.getConnection();
@@ -97,20 +96,21 @@ public class CorsoDAO {
 			ResultSet rs = st.executeQuery();
 			StudenteDAO dao = new StudenteDAO();
 			
-			if (!rs.next()) {
+			//Metodo migliore per leggere i resultset controllando anche se restituisce qualcosa
+			if (rs.next()) {
+				do {
+					matricola = rs.getInt("matricola");
+					s = dao.getStudentePerMatricola(matricola);
+					//System.out.println(s.toString());
+					studenti.add(dao.getStudentePerMatricola(matricola));
+				} while (rs.next());
+			 
+			} else {
 				return null;
-			}
-			else {
-				
-			while (rs.next()) {
-			matricola = rs.getInt("matricola");
-			studenti.add(dao.getStudentePerMatricola(matricola));
-					}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException("Errore DB");
 		}
-			
 		return studenti;
 	}
 
@@ -125,14 +125,15 @@ public class CorsoDAO {
 			st.setInt(1, matricola);
 			ResultSet rs = st.executeQuery();
 			
-			if (!rs.next()) {
-				return null;
-			}
+			if (rs.next()) {
+				do {
+					codins = rs.getString("codins");
+					corsi.add(this.getCorso(codins));
+				} while (rs.next());
 			
-			while (rs.next()) {
-				codins = rs.getString("codins");
-				corsi.add(this.getCorso(codins));
-			}
+			} else 
+				return null;
+			
 		} catch (SQLException e) {
 			throw new RuntimeException("Errore DB");
 		}
