@@ -65,7 +65,10 @@ public class SegreteriaStudentiController {
     @FXML
     void doCercaCorsi(ActionEvent event) {
     	String s = this.txtinserisciMatricola.getText();
+    	Corso c = this.ComboBox.getValue();
     	int matricola;
+    	
+    	if (c == null || c.getNome().equals("")) {
     	
     	if (s.equals("")) {
     		this.txtResult.appendText("Inserisci un numero di matricola\n");
@@ -80,16 +83,42 @@ public class SegreteriaStudentiController {
     			this.txtResult.appendText("Non esiste nessuno studente con tale numero di matricola!\n");
     		}
     		
-    		for (Corso c : model.getCorsiByStudente(matricola) ) {
-    			this.txtResult.appendText("\n"+c.stampaCorso());
+    		for (Corso cs : model.getCorsiByStudente(matricola) ) {
+    			this.txtResult.appendText(cs.stampaCorso()+"\n");
         	}
     
     	} catch (NumberFormatException e) {
-		this.txtResult.appendText("La matricola è composta da soli numeri\n");
+		this.txtResult.appendText("Errore: inserisci una matricola composta da soli numeri!\n");
 		e.printStackTrace();
 	}
-    	
+    	} else  if ( c != null && !c.getNome().equals("")) {
+    		
+    		if (s.equals("")) {
+        		this.txtResult.appendText("Inserisci un numero di matricola\n");
+        		return;
+        	}
+    		
+    		try {
+        		matricola = Integer.parseInt(s);
+        		Studente st = this.model.getStudenteByMatricola(matricola);
+        		
+        		if (st == null) {
+        			this.txtResult.appendText("Non esiste nessuno studente con tale numero di matricola!\n");
+        		}
+        		else {
+        			if (model.isStudenteIscrittoA(matricola, c.getCodIns()))
+        				this.txtResult.appendText("Studente già iscritto a questo corso\n");
+        			else 
+        				this.txtResult.appendText("Studente non iscritto a questo corso\n");
+        		}
+        		
+    		} catch (NumberFormatException e) {
+    			this.txtResult.appendText("Errore: inserisci una matricola composta da soli numeri!\n");
+    			e.printStackTrace();
+    		}
+    	}
     }
+   
     @FXML
     void doCercaIscrittiCorso(ActionEvent event) {
     	Corso c = this.ComboBox.getValue();
@@ -129,7 +158,7 @@ public class SegreteriaStudentiController {
     		}
 	    		
     	} catch (NumberFormatException e) {
-    		this.txtResult.appendText("La matricola è composta da soli numeri\n");
+    		this.txtResult.appendText("Errore: inserisci una matricola composta da soli numeri!\n");
     		e.printStackTrace();
     	}
     	
