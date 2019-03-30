@@ -72,7 +72,7 @@ public class SegreteriaStudentiController {
     	if (c == null || c.getNome().equals("")) {
     	
     	if (s.equals("")) {
-    		this.txtResult.appendText("Inserisci un numero di matricola\n");
+    		this.txtResult.appendText("Inserisci un numero di matricola!\n");
     		return;
     	}
     	
@@ -86,7 +86,7 @@ public class SegreteriaStudentiController {
     		}
     		ltemp = model.getCorsiByStudente(matricola);
     		if (ltemp == null) {
-    			this.txtResult.appendText("Lo studente non e' iscritto ad alcun corso\n");
+    			this.txtResult.appendText("Lo studente non e' iscritto ad alcun corso.\n");
     			return;
     		}
     		
@@ -115,14 +115,16 @@ public class SegreteriaStudentiController {
         		}
         		else { 
         			Boolean b = model.isStudenteIscrittoA(matricola, c.getCodIns());
-        			if (b == null) {
-        				this.txtResult.appendText("Nessuno studente iscritto a questo corso\n");
+        			List<Studente> bool = model.getStudentiPerCorso(c);
+        			
+        			if (bool == null) {
+        				this.txtResult.appendText("Nessuno studente iscritto a questo corso.\n");
         				return;
         			}
         			if (b == true)
-        				this.txtResult.appendText("Studente già iscritto a questo corso\n");
+        				this.txtResult.appendText("Studente già iscritto a questo corso.\n");
         			else 
-        				this.txtResult.appendText("Studente non iscritto a questo corso\n");
+        				this.txtResult.appendText("Studente non iscritto a questo corso.\n");
         		}
         		
     		} catch (NumberFormatException e) {
@@ -143,7 +145,7 @@ public class SegreteriaStudentiController {
     	
     	ltemp = model.getStudentiPerCorso(c);
     	if (ltemp == null) {
-    		this.txtResult.appendText("Nessuno studente iscritto a questo corso\n");
+    		this.txtResult.appendText("Nessuno studente iscritto a questo corso.\n");
     		return;
     	}
     	
@@ -154,7 +156,58 @@ public class SegreteriaStudentiController {
 
     @FXML
     void doIscrivi(ActionEvent event) {
-
+    	String s = this.txtinserisciMatricola.getText();
+    	Corso c = this.ComboBox.getValue();
+    	int matricola;
+    	Studente st;
+    	boolean b;
+    	boolean res;
+    	
+    	if (c == null || c.getNome().equals("")) {
+    		if (s.equals("")) {
+    			this.txtResult.appendText("Errore: devi inserire un numero di matricola e selezionare un corso!\n");
+    			return;
+    		}
+    		else {
+	    		this.txtResult.appendText("Errore: devi selezionare un corso!\n");
+	    		return;
+    		}
+    	}
+    	if (c != null && !c.getNome().equals("")) {
+    	
+    		if (s.equals("")) {
+    			this.txtResult.appendText("Inserisci un numero di matricola!\n");
+    			return;
+    		}
+    	try {
+    		matricola = Integer.parseInt(s);
+    		st = model.getStudenteByMatricola(matricola);
+    		
+    		if (st == null) {
+    			this.txtResult.appendText("Non esiste nessuno studente con tale numero di matricola!\n");
+    			return;
+    		}
+    	
+    		b = model.isStudenteIscrittoA(matricola, c.getCodIns());
+    		if (b) {
+    			this.txtResult.appendText("Studente già iscritto a questo corso\n");
+    		}
+    		else {
+    			res = model.iscriviStudente(st, c);
+    			if (res) {
+    				this.txtResult.appendText("Studente iscritto correttamente al corso.\n");
+    				return;
+    			} else {
+    				this.txtResult.appendText("Errore nell'iscrizione!\n");
+    				return;
+    			}
+    		}
+    		
+    	} catch (NumberFormatException e) {
+    		this.txtResult.appendText("Errore: inserisci una matricola composta da soli numeri!\n");
+    		e.printStackTrace();
+    	}
+    	}
     }
 
     @FXML

@@ -36,16 +36,23 @@ public class Model {
 		return dao.getCorsiPerStudente(matricola);
 	}
 	
-	public Boolean isStudenteIscrittoA (int matricola, String codins) {
+	public boolean isStudenteIscrittoA (int matricola, String codins) {
 		CorsoDAO dao = new CorsoDAO();
 		StudenteDAO daos = new StudenteDAO();
 		List <Studente> ltemp = dao.getStudentiIscrittiAlCorso(dao.getCorso(codins));
 		if (ltemp == null) {
-			return null;
+			return false;
 		}
 		Studente s = daos.getStudentePerMatricola(matricola);
 		return ltemp.contains(s);
 	}
+
+
+	public boolean iscriviStudente(Studente s, Corso c) {
+		CorsoDAO dao = new CorsoDAO();
+		return dao.inscriviStudenteACorso(s, c);
+	}
+	
 	
 }
 
