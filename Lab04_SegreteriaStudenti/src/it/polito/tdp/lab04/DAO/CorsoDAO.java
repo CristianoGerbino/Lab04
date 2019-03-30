@@ -97,9 +97,15 @@ public class CorsoDAO {
 			ResultSet rs = st.executeQuery();
 			StudenteDAO dao = new StudenteDAO();
 			
+			if (!rs.next()) {
+				return null;
+			}
+			else {
+				
 			while (rs.next()) {
-				matricola = rs.getInt("matricola");
-				studenti.add(dao.getStudentePerMatricola(matricola));
+			matricola = rs.getInt("matricola");
+			studenti.add(dao.getStudentePerMatricola(matricola));
+					}
 			}
 		} catch (SQLException e) {
 			throw new RuntimeException("Errore DB");
@@ -118,6 +124,10 @@ public class CorsoDAO {
 			PreparedStatement st = conn.prepareStatement(sql);
 			st.setInt(1, matricola);
 			ResultSet rs = st.executeQuery();
+			
+			if (!rs.next()) {
+				return null;
+			}
 			
 			while (rs.next()) {
 				codins = rs.getString("codins");

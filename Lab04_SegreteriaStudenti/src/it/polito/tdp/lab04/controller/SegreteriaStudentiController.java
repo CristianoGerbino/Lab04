@@ -67,6 +67,7 @@ public class SegreteriaStudentiController {
     	String s = this.txtinserisciMatricola.getText();
     	Corso c = this.ComboBox.getValue();
     	int matricola;
+    	List <Corso> ltemp; 
     	
     	if (c == null || c.getNome().equals("")) {
     	
@@ -82,8 +83,13 @@ public class SegreteriaStudentiController {
     		if (st == null) {
     			this.txtResult.appendText("Non esiste nessuno studente con tale numero di matricola!\n");
     		}
+    		ltemp = model.getCorsiByStudente(matricola);
+    		if (ltemp == null) {
+    			this.txtResult.appendText("Lo studente non e' iscritto ad alcun corso\n");
+    			return;
+    		}
     		
-    		for (Corso cs : model.getCorsiByStudente(matricola) ) {
+    		for (Corso cs : ltemp ) {
     			this.txtResult.appendText(cs.stampaCorso()+"\n");
         	}
     
@@ -104,9 +110,15 @@ public class SegreteriaStudentiController {
         		
         		if (st == null) {
         			this.txtResult.appendText("Non esiste nessuno studente con tale numero di matricola!\n");
+        			return;
         		}
-        		else {
-        			if (model.isStudenteIscrittoA(matricola, c.getCodIns()))
+        		else { 
+        			Boolean b = model.isStudenteIscrittoA(matricola, c.getCodIns());
+        			if (b == null) {
+        				this.txtResult.appendText("Nessuno studente iscritto a questo corso\n");
+        				return;
+        			}
+        			if (b)
         				this.txtResult.appendText("Studente già iscritto a questo corso\n");
         			else 
         				this.txtResult.appendText("Studente non iscritto a questo corso\n");
@@ -122,11 +134,18 @@ public class SegreteriaStudentiController {
     @FXML
     void doCercaIscrittiCorso(ActionEvent event) {
     	Corso c = this.ComboBox.getValue();
+    	List<Studente> ltemp;
     	if (c == null || c.getNome().equals("")) {
     		this.txtResult.appendText("Errore: devi selezionare un corso!\n");
     		return;
     	}
-    	for (Studente s : model.getStudentiPerCorso(c)) {
+    	ltemp = model.getStudentiPerCorso(c);
+    	if (ltemp == null) {
+    		this.txtResult.appendText("Nessuno studente iscritto a questo corso\n");
+    		return;
+    	}
+    	
+    	for (Studente s : ltemp) {
     		this.txtResult.appendText(s.toString()+"\n");
     	}
     }
